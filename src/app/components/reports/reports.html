@@ -1,0 +1,105 @@
+
+<div class="reports-page">
+
+  <div class="page-header">
+    <div>
+      <h1>Reports & Insights</h1>
+      <p>View and manage your store reports in one place</p>
+    </div>
+
+    <button class="print-btn" (click)="printReport()">
+      🖨️ Print Reports
+    </button>
+  </div>
+
+  <!-- Report Summary -->
+  <div class="summary-grid">
+
+    <div class="summary-card">
+      <div class="summary-icon green">📊</div>
+      <div>
+        <p>Total Reports</p>
+        <h2>{{ reports.length }}</h2>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-icon blue">💰</div>
+      <div>
+        <p>Sales Reports</p>
+        <h2>2</h2>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-icon orange">📦</div>
+      <div>
+        <p>Inventory Reports</p>
+        <h2>2</h2>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-icon purple">🚚</div>
+      <div>
+        <p>Supplier Reports</p>
+        <h2>1</h2>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Filters -->
+  <div class="filter-section">
+    <div>
+      <h2>Available Reports</h2>
+      <p>Select a category to view reports</p>
+    </div>
+
+    <div class="filter-buttons">
+      <button
+        *ngFor="let filter of ['All Reports', 'Sales', 'Inventory', 'Expiry', 'Supplier']"
+        [class.active]="selectedReport === filter"
+        (click)="selectFilter(filter)">
+        {{ filter }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Report Cards -->
+  <div class="reports-grid">
+
+    <div class="report-card" *ngFor="let report of filteredReports">
+
+      <div class="report-top">
+        <div class="report-icon">{{ report.icon }}</div>
+        <span class="report-type">{{ report.type }}</span>
+      </div>
+
+      <h3>{{ report.title }}</h3>
+      <p>{{ report.description }}</p>
+
+      <div class="report-footer">
+        <span>{{ report.records }} Records</span>
+
+        <button (click)="viewReport(report)">
+          View Report →
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="empty-state" *ngIf="filteredReports.length === 0">
+    <span>📂</span>
+    <h3>No Reports Found</h3>
+    <p>Try selecting another category.</p>
+  </div>
+
+  <div class="report-note">
+    <strong>Note:</strong>
+    Reports currently display sample demonstration data.
+  </div>
+
+</div>

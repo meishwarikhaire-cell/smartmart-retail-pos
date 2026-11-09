@@ -1,0 +1,245 @@
+
+<div class="products-page">
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <div>
+      <h1>Product Catalogue 📦</h1>
+      <p>Manage your supermarket products and stock.</p>
+    </div>
+
+    <button class="add-btn" (click)="openAddForm()">
+      + Add Product
+    </button>
+  </div>
+
+  <!-- SUMMARY CARDS -->
+  <div class="summary-cards">
+    <div class="summary-card">
+      <span>Total Products</span>
+      <h2>{{ products.length }}</h2>
+    </div>
+
+    <div class="summary-card">
+      <span>Low Stock Products</span>
+      <h2 class="warning">{{ lowStockCount }}</h2>
+    </div>
+
+    <div class="summary-card">
+      <span>Categories</span>
+      <h2>{{ categories.length }}</h2>
+    </div>
+  </div>
+
+  <!-- CATEGORY SECTION -->
+  <div class="category-section">
+    <h2>Shop by Category</h2>
+    <p>Select a category to explore its products.</p>
+
+    <div class="category-grid">
+
+      <button
+        type="button"
+        class="category-card"
+        [class.selected]="selectedCategory === category"
+        *ngFor="let category of categories"
+        (click)="selectCategory(category)">
+
+        <span *ngIf="category === 'Grocery & Staples'">🌾</span>
+        <span *ngIf="category === 'Fruits & Vegetables'">🍎</span>
+        <span *ngIf="category === 'Dairy & Bakery'">🥛</span>
+        <span *ngIf="category === 'Snacks & Beverages'">🍿</span>
+        <span *ngIf="category === 'Clothing & Fashion'">👕</span>
+        <span *ngIf="category === 'Personal Care'">🧴</span>
+        <span *ngIf="category === 'Home & Cleaning'">🧹</span>
+        <span *ngIf="category === 'Electronics & Household'">💡</span>
+
+        <strong>{{ category }}</strong>
+      </button>
+
+    </div>
+
+    <button
+      type="button"
+      class="all-category-btn"
+      (click)="selectCategory('All')">
+      View All Products
+    </button>
+  </div>
+
+  <!-- SELECTED CATEGORY TITLE -->
+  <div class="selected-category-heading">
+    <h2>
+      {{ selectedCategory === 'All' ? 'All Products' : selectedCategory }}
+    </h2>
+    <p>Products available in this category.</p>
+  </div>
+
+  <!-- SEARCH AND FILTER -->
+  <div class="toolbar">
+    <input
+      type="text"
+      placeholder="🔍 Search product or barcode..."
+      [(ngModel)]="searchText">
+
+    <select [(ngModel)]="selectedCategory">
+      <option value="All">All Categories</option>
+
+      <option
+        *ngFor="let category of categories"
+        [value]="category">
+        {{ category }}
+      </option>
+    </select>
+  </div>
+
+  <!-- PRODUCT TABLE -->
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>Product</th>
+          <th>Category</th>
+          <th>Barcode</th>
+          <th>Price</th>
+          <th>Stock</th>
+          <th>Expiry Date</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let product of filteredProducts">
+          <td><strong>{{ product.name }}</strong></td>
+          <td>{{ product.category }}</td>
+          <td>{{ product.barcode }}</td>
+          <td>₹{{ product.price }}</td>
+          <td>{{ product.stock }}</td>
+          <td>{{ product.expiry | date:'dd MMM yyyy' }}</td>
+
+          <td>
+            <span
+              class="status"
+              [class.low]="product.stock < 10"
+              [class.available]="product.stock >= 10">
+
+              {{ product.stock < 10 ? 'Low Stock' : 'Available' }}
+            </span>
+          </td>
+
+          <td>
+            <button
+              type="button"
+              class="edit-btn"
+              (click)="editProduct(product)">
+              ✏️
+            </button>
+
+            <button
+              type="button"
+              class="delete-btn"
+              (click)="deleteProduct(product.id)">
+              🗑️
+            </button>
+          </td>
+        </tr>
+
+        <tr *ngIf="filteredProducts.length === 0">
+          <td colspan="8" class="empty">
+            No products found in this category.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ADD / EDIT PRODUCT FORM -->
+  <div class="form-overlay" *ngIf="showForm">
+    <div class="product-form">
+
+      <div class="form-heading">
+        <h2>{{ editMode ? 'Edit Product' : 'Add New Product' }}</h2>
+
+        <button
+          type="button"
+          class="close-btn"
+          (click)="closeForm()">
+          ✕
+        </button>
+      </div>
+
+      <form (ngSubmit)="addProduct()">
+
+        <label>Product Name</label>
+        <input
+          type="text"
+          name="name"
+          [(ngModel)]="newProduct.name"
+          placeholder="Enter product name"
+          required>
+
+        <label>Category</label>
+        <select
+          name="category"
+          [(ngModel)]="newProduct.category"
+          required>
+
+          <option value="">Select Category</option>
+
+          <option
+            *ngFor="let category of categories"
+            [value]="category">
+            {{ category }}
+          </option>
+        </select>
+
+        <label>Price (₹)</label>
+        <input
+          type="number"
+          name="price"
+          [(ngModel)]="newProduct.price"
+          min="0.01"
+          required>
+
+        <label>Stock Quantity</label>
+        <input
+          type="number"
+          name="stock"
+          [(ngModel)]="newProduct.stock"
+          min="0"
+          required>
+
+        <label>Barcode</label>
+        <input
+          type="text"
+          name="barcode"
+          [(ngModel)]="newProduct.barcode"
+          placeholder="Enter barcode"
+          required>
+
+        <label>Expiry Date</label>
+        <input
+          type="date"
+          name="expiry"
+          [(ngModel)]="newProduct.expiry"
+          required>
+
+        <div class="form-actions">
+          <button
+            type="button"
+            class="cancel-btn"
+            (click)="closeForm()">
+            Cancel
+          </button>
+
+          <button type="submit" class="save-btn">
+            {{ editMode ? 'Update Product' : 'Save Product' }}
+          </button>
+        </div>
+
+      </form>
+    </div>
+  </div>
+
+</div>

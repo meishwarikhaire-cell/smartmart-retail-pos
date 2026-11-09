@@ -1,0 +1,236 @@
+
+<div class="suppliers-page">
+
+  <div class="suppliers-header">
+    <div>
+      <h1>Supplier Management</h1>
+      <p>Manage suppliers and purchase orders in one place.</p>
+    </div>
+
+    <button class="add-supplier-btn" (click)="openForm()">
+      + Add New Supplier
+    </button>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="supplier-stats">
+
+    <div class="stat-card">
+      <div class="stat-icon">🏢</div>
+      <div>
+        <p>Total Suppliers</p>
+        <h2>{{ totalSuppliers }}</h2>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">📦</div>
+      <div>
+        <p>Total Purchase Orders</p>
+        <h2>{{ totalOrders }}</h2>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">⏳</div>
+      <div>
+        <p>Pending Orders</p>
+        <h2>{{ pendingOrders }}</h2>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Supplier List -->
+  <section class="supplier-panel">
+
+    <div class="section-heading">
+      <div>
+        <h2>Our Suppliers</h2>
+        <p>View and manage your supplier information.</p>
+      </div>
+
+      <input
+        type="text"
+        placeholder="Search supplier..."
+        [(ngModel)]="searchText"
+      />
+    </div>
+
+    <div class="supplier-grid">
+
+      <div class="supplier-card"
+        *ngFor="let supplier of filteredSuppliers">
+
+        <div class="supplier-card-top">
+          <div class="supplier-icon">🏢</div>
+
+          <button
+            class="delete-btn"
+            (click)="deleteSupplier(supplier.id)">
+            ✕
+          </button>
+        </div>
+
+        <h3>{{ supplier.name }}</h3>
+
+        <span class="category-tag">
+          {{ supplier.category }}
+        </span>
+
+        <div class="supplier-info">
+          <p>📞 {{ supplier.contact }}</p>
+          <p>✉️ {{ supplier.email }}</p>
+          <p>📍 {{ supplier.city }}</p>
+        </div>
+
+      </div>
+
+      <div *ngIf="filteredSuppliers.length === 0"
+        class="no-suppliers">
+        No suppliers found.
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- Purchase Orders -->
+  <section class="orders-panel">
+
+    <div class="section-heading">
+      <div>
+        <h2>Purchase Orders</h2>
+        <p>Track supplier orders and delivery status.</p>
+      </div>
+    </div>
+
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Order ID</th>
+            <th>Supplier</th>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Amount</th>
+            <th>Date</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let order of purchaseOrders">
+            <td>#{{ order.id }}</td>
+            <td>{{ order.supplier }}</td>
+            <td>{{ order.product }}</td>
+            <td>{{ order.quantity }}</td>
+            <td>₹{{ order.amount }}</td>
+            <td>{{ order.date }}</td>
+
+            <td>
+              <select
+                class="order-status"
+                [ngClass]="order.status.toLowerCase()"
+                [(ngModel)]="order.status">
+
+                <option value="Pending">Pending</option>
+                <option value="Delivered">Delivered</option>
+                <option value="Cancelled">Cancelled</option>
+
+              </select>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+  </section>
+
+  <!-- Add Supplier Form -->
+  <div class="form-overlay" *ngIf="showForm">
+
+    <div class="supplier-form">
+
+      <div class="form-heading">
+        <div>
+          <h2>Add New Supplier</h2>
+          <p>Enter supplier details below.</p>
+        </div>
+
+        <button class="close-btn" (click)="closeForm()">✕</button>
+      </div>
+
+      <form (ngSubmit)="addSupplier()">
+
+        <label>Supplier Name</label>
+        <input
+          type="text"
+          name="name"
+          [(ngModel)]="newSupplier.name"
+          placeholder="Enter supplier name"
+          required
+        />
+
+        <label>Contact Number</label>
+        <input
+          type="tel"
+          name="contact"
+          maxlength="10"
+          [(ngModel)]="newSupplier.contact"
+          placeholder="Enter 10-digit mobile number"
+          required
+        />
+
+        <label>Email Address</label>
+        <input
+          type="email"
+          name="email"
+          [(ngModel)]="newSupplier.email"
+          placeholder="Enter email address"
+          required
+        />
+
+        <label>Product Category</label>
+        <select
+          name="category"
+          [(ngModel)]="newSupplier.category"
+          required>
+          <option value="">Select Category</option>
+          <option>Grocery & Staples</option>
+          <option>Fruits & Vegetables</option>
+          <option>Dairy & Bakery</option>
+          <option>Snacks & Beverages</option>
+          <option>Clothing & Fashion</option>
+          <option>Personal Care</option>
+          <option>Home & Cleaning</option>
+          <option>Electronics & Household</option>
+        </select>
+
+        <label>City</label>
+        <input
+          type="text"
+          name="city"
+          [(ngModel)]="newSupplier.city"
+          placeholder="Enter city"
+          required
+        />
+
+        <div class="form-actions">
+          <button type="button"
+            class="cancel-btn"
+            (click)="closeForm()">
+            Cancel
+          </button>
+
+          <button type="submit" class="save-btn">
+            Save Supplier
+          </button>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+
+</div>

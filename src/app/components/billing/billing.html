@@ -1,0 +1,167 @@
+
+<div class="billing-page">
+
+  <div class="billing-header">
+    <div>
+      <h1>POS Billing</h1>
+      <p>Create bills and manage customer purchases</p>
+    </div>
+    <span class="status-badge">● POS Active</span>
+  </div>
+
+  <div class="billing-layout">
+
+    <!-- Available Products -->
+    <section class="product-panel">
+      <h2>Available Products</h2>
+
+      <input
+        type="text"
+        class="search-input"
+        placeholder="Search products..."
+        [(ngModel)]="searchText"
+      />
+
+      <div class="billing-products">
+        <div class="billing-product-card"
+          *ngFor="let product of filteredProducts">
+
+          <div class="product-icon">🛍️</div>
+          <h3>{{ product.name }}</h3>
+          <p>{{ product.category }}</p>
+
+          <div class="product-price">
+            ₹{{ product.price }}
+          </div>
+
+          <small>Stock: {{ product.stock }}</small>
+
+          <button
+            class="add-cart-btn"
+            (click)="addToCart(product)">
+            + Add to Cart
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Cart and Invoice -->
+    <section class="cart-panel">
+
+      <h2>🛒 Shopping Cart</h2>
+
+      <div *ngIf="cart.length === 0" class="empty-cart">
+        <h3>🛒 Your cart is empty</h3>
+        <p>Add products to start billing.</p>
+      </div>
+
+      <div *ngFor="let item of cart" class="cart-item">
+
+        <div class="cart-item-info">
+          <h4>{{ item.name }}</h4>
+          <p>₹{{ item.price }} × {{ item.quantity }}</p>
+        </div>
+
+        <div class="quantity-controls">
+          <button (click)="decreaseQuantity(item)">−</button>
+          <span>{{ item.quantity }}</span>
+          <button (click)="increaseQuantity(item)">+</button>
+        </div>
+
+        <strong>₹{{ item.price * item.quantity }}</strong>
+
+        <button class="remove-btn"
+          (click)="removeItem(item.id)">
+          ✕
+        </button>
+      </div>
+
+      <button
+        *ngIf="cart.length > 0"
+        class="clear-cart-btn"
+        (click)="clearCart()">
+        Clear Cart
+      </button>
+
+      <!-- Customer Details -->
+      <div class="customer-section">
+        <h2>👤 Customer Details</h2>
+
+        <label>Customer Name</label>
+        <input
+          type="text"
+          placeholder="Enter customer name"
+          [(ngModel)]="customerName"
+        />
+
+        <label>Mobile Number</label>
+        <input
+          type="tel"
+          maxlength="10"
+          placeholder="Enter 10-digit mobile number"
+          [(ngModel)]="customerMobile"
+        />
+      </div>
+
+      <!-- Payment Method -->
+      <div class="payment-section">
+        <h2>💳 Payment Method</h2>
+
+        <select [(ngModel)]="paymentMethod">
+          <option value="Cash">Cash</option>
+          <option value="UPI">UPI</option>
+          <option value="Card">Debit / Credit Card</option>
+        </select>
+      </div>
+
+      <!-- Bill Summary -->
+      <div class="bill-summary">
+
+        <h2>Bill Summary</h2>
+
+        <div class="summary-row">
+          <span>Total Items</span>
+          <strong>{{ totalItems }}</strong>
+        </div>
+
+        <div class="summary-row">
+          <span>Subtotal</span>
+          <strong>₹{{ subtotal.toFixed(2) }}</strong>
+        </div>
+
+        <div class="discount-control">
+          <label>Discount (%)</label>
+          <input
+            type="number"
+            min="0"
+            max="100"
+            [(ngModel)]="discount"
+          />
+        </div>
+
+        <div class="summary-row">
+          <span>Discount Amount</span>
+          <strong>- ₹{{ discountAmount.toFixed(2) }}</strong>
+        </div>
+
+        <div class="summary-row">
+          <span>GST ({{ gstRate }}%)</span>
+          <strong>₹{{ gstAmount.toFixed(2) }}</strong>
+        </div>
+
+        <div class="grand-total">
+          <span>Grand Total</span>
+          <strong>₹{{ grandTotal.toFixed(2) }}</strong>
+        </div>
+
+        <button
+          class="checkout-btn"
+          [disabled]="cart.length === 0"
+          (click)="generateInvoice()">
+          🧾 Generate Invoice & Print
+        </button>
+
+      </div>
+    </section>
+  </div>
+</div>

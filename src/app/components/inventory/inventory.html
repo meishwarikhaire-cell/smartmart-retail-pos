@@ -1,0 +1,246 @@
+
+<div class="inventory-page">
+
+  <!-- Header -->
+  <div class="inventory-header">
+    <div>
+      <h1>Inventory Management</h1>
+      <p>Monitor stock levels, product freshness and expiry dates.</p>
+    </div>
+
+    <div class="inventory-badge">🌿 Smart Freshness System</div>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="inventory-stats">
+
+    <div class="inventory-stat-card">
+      <div class="inventory-icon green">📦</div>
+      <div>
+        <p>Total Products</p>
+        <h2>{{ totalProducts }}</h2>
+      </div>
+    </div>
+
+    <div class="inventory-stat-card">
+      <div class="inventory-icon blue">🏪</div>
+      <div>
+        <p>Total Stock Units</p>
+        <h2>{{ totalStock }}</h2>
+      </div>
+    </div>
+
+    <div class="inventory-stat-card">
+      <div class="inventory-icon orange">⚠️</div>
+      <div>
+        <p>Low Stock Alerts</p>
+        <h2>{{ lowStockCount }}</h2>
+      </div>
+    </div>
+
+    <div class="inventory-stat-card">
+      <div class="inventory-icon red">⏳</div>
+      <div>
+        <p>Near Expiry</p>
+        <h2>{{ nearExpiryCount }}</h2>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Smart Alerts -->
+  <section class="inventory-alert-section">
+
+    <div class="inventory-section-heading">
+      <div>
+        <h2>🔔 Smart Inventory Alerts</h2>
+        <p>Products that need your attention.</p>
+      </div>
+    </div>
+
+    <div class="alert-grid">
+
+      <div class="alert-card low-alert">
+        <span>⚠️</span>
+        <div>
+          <h3>Low Stock Warning</h3>
+          <p>{{ lowStockCount }} products need restocking.</p>
+        </div>
+      </div>
+
+      <div class="alert-card expiry-alert">
+        <span>⏰</span>
+        <div>
+          <h3>Expiry Alert</h3>
+          <p>{{ nearExpiryCount }} products are nearing expiry.</p>
+        </div>
+      </div>
+
+      <div class="alert-card out-alert">
+        <span>🚫</span>
+        <div>
+          <h3>Out of Stock</h3>
+          <p>{{ outOfStockCount }} products are unavailable.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Discount Suggestions -->
+  <section class="discount-section">
+
+    <div class="inventory-section-heading">
+      <div>
+        <h2>🌿 Smart Discount Suggestions</h2>
+        <p>Suggested discounts based on sample expiry dates.</p>
+      </div>
+    </div>
+
+    <div class="discount-grid">
+
+      <div class="discount-card"
+        *ngFor="let product of products"
+        [hidden]="getDiscount(product.expiry) === 0">
+
+        <div>
+          <h3>{{ product.name }}</h3>
+          <p>{{ getExpiryLabel(product.expiry) }}</p>
+        </div>
+
+        <div class="discount-value">
+          {{ getDiscount(product.expiry) }}% OFF
+        </div>
+
+        <div class="discount-price">
+          Original Price: ₹{{ product.price }}
+        </div>
+
+        <strong>
+          Suggested Price:
+          ₹{{ (product.price * (1 - getDiscount(product.expiry) / 100)).toFixed(2) }}
+        </strong>
+
+      </div>
+
+    </div>
+
+    <p class="no-discount"
+      *ngIf="nearExpiryCount === 0">
+      No near-expiry products currently.
+    </p>
+
+  </section>
+
+  <!-- Inventory Table -->
+  <section class="inventory-table-section">
+
+    <div class="inventory-section-heading">
+      <div>
+        <h2>📋 Stock & Expiry Details</h2>
+        <p>Manage product stock and monitor freshness.</p>
+      </div>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="inventory-toolbar">
+
+      <input
+        type="text"
+        placeholder="Search product or category..."
+        [(ngModel)]="searchText"
+      />
+
+      <select [(ngModel)]="selectedFilter">
+        <option value="All">All Products</option>
+        <option value="Low Stock">Low Stock</option>
+        <option value="Out of Stock">Out of Stock</option>
+        <option value="Near Expiry">Near Expiry</option>
+      </select>
+
+    </div>
+
+    <div class="inventory-table-wrapper">
+
+      <table>
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Category</th>
+            <th>Stock</th>
+            <th>Minimum Stock</th>
+            <th>Expiry Date</th>
+            <th>Freshness</th>
+            <th>Stock Status</th>
+            <th>Reorder Suggestion</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr *ngFor="let product of filteredProducts">
+
+            <td>
+              <strong>{{ product.name }}</strong>
+            </td>
+
+            <td>{{ product.category }}</td>
+
+            <td>{{ product.stock }}</td>
+
+            <td>{{ product.minStock }}</td>
+
+            <td>{{ product.expiry }}</td>
+
+            <td>
+              <span
+                class="expiry-status"
+                [ngClass]="{
+                  'expired': daysUntilExpiry(product.expiry) < 0,
+                  'near-expiry': daysUntilExpiry(product.expiry) >= 0 && daysUntilExpiry(product.expiry) <= 7,
+                  'fresh': daysUntilExpiry(product.expiry) > 7
+                }">
+                {{ getExpiryLabel(product.expiry) }}
+              </span>
+            </td>
+
+            <td>
+              <span
+                class="stock-status"
+                [ngClass]="{
+                  'low': getStockStatus(product) === 'Low Stock',
+                  'available': getStockStatus(product) === 'In Stock',
+                  'out': getStockStatus(product) === 'Out of Stock'
+                }">
+                {{ getStockStatus(product) }}
+              </span>
+            </td>
+
+            <td>
+              <span class="reorder-value">
+                {{ getReorderQuantity(product) }} Units
+              </span>
+            </td>
+
+          </tr>
+
+          <tr *ngIf="filteredProducts.length === 0">
+            <td colspan="8" class="empty-inventory">
+              No matching products found.
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+
+    </div>
+
+    <div class="fefo-note">
+      <strong>💡 FEFO Strategy:</strong>
+      First Expire, First Out – products with earlier expiry dates
+      should be sold or dispatched first.
+    </div>
+
+  </section>
+
+</div>

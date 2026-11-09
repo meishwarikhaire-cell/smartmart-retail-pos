@@ -1,0 +1,67 @@
+
+<div class="dashboard">
+
+  <div class="welcome">
+    <div>
+      <h1>Good Morning, Admin! 👋</h1>
+      <p>Here is what's happening in your store today.</p>
+    </div>
+    <div class="welcome-icon">🛒</div>
+  </div>
+
+  <div class="section-heading">
+    <h2>Store Overview</h2>
+    <span>Today's Summary</span>
+  </div>
+
+  <div class="stats-grid">
+    <div class="stat-card" *ngFor="let item of stats">
+      <div class="stat-top">
+        <span>{{ item.title }}</span>
+        <div class="stat-icon" [ngClass]="item.color">{{ item.icon }}</div>
+      </div>
+      <h2>{{ item.value }}</h2>
+      <p>{{ item.change }}</p>
+    </div>
+  </div>
+
+  <div class="content-grid">
+
+    <div class="panel">
+      <h2>🔥 Top Selling Products</h2>
+
+      <div class="product-row" *ngFor="let product of topProducts">
+        <div class="product-info">
+          <strong>{{ product.name }}</strong>
+          <span>{{ product.sales }} sales</span>
+        </div>
+        <div class="progress">
+          <div class="progress-fill" [style.width.%]="product.percentage"></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>🕒 Recent Activities</h2>
+
+      <div class="activity-row" *ngFor="let activity of activities">
+        <span class="activity-icon">{{ activity.icon }}</span>
+        <div class="activity-info">
+          <strong>{{ activity.name }}</strong>
+          <p>{{ activity.action }}</p>
+        </div>
+        <small>{{ activity.time }}</small>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="smart-alert">
+    <span>🌱</span>
+    <div>
+      <h3>Smart Freshness Alert</h3>
+      <p>8 products are nearing their expiry date. Check them and apply suitable discounts to reduce food waste.</p>
+    </div>
+  </div>
+
+</div>
